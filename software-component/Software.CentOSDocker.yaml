@@ -1,0 +1,72 @@
+'@type': "SoftwareComponentType"
+createdDate: "2018-08-03T20:00:33.988Z"
+lastUpdated: "2018-08-03T20:02:46.987Z"
+id: "Software.CentOSDocker"
+name: "CentOS: Docker"
+description: "Installs Docker and Docker-Compose on CentOS"
+publishStatus: "PUBLISHED"
+publishStatusName: "Published"
+schema:
+  fields:
+  - id: "host"
+    label: "Container"
+    description: ""
+    dataType:
+      type: "ref"
+      componentTypeId: "com.vmware.csp.iaas.blueprint.service"
+      classId: "Infrastructure.Machine.Schema"
+      label: "Machine"
+    state:
+      dependencies: []
+      facets:
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
+      - type: "internal"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
+    isMultiValued: false
+containerFieldId: "host"
+lifecycleTasks:
+- createdDate: "2018-08-03T20:00:33.990Z"
+  lastUpdated: "2018-08-03T20:00:33.990Z"
+  script:
+    scriptContent: "#!/bin/bash\nsystemctl start docker\nsystemctl enable docker\n"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "START"
+    label: "Start"
+- createdDate: "2018-08-03T20:00:33.989Z"
+  lastUpdated: "2018-08-03T20:00:33.989Z"
+  script:
+    scriptContent: "#!/bin/bash\n# Set ENV variables:\ndocker_compose_version=1.22.0\n\
+      \n# Update system\necho \"updating system and installing essentials\"\nyum install\
+      \ -y net-tools deltarpm perl make open-vm-tools git yum-utils device-mapper-persistent-data\
+      \ lvm2 wget ntp unzip curl tar bzip2 hostname rsyslog openssl epel-release\n\
+      yum reinstall -y systemd\nyum update --skip-broken -y\nsystemctl restart vmtoolsd\n\
+      \n# Install Docker CE — https://docs.docker.com/engine/installation/linux/centos/#docker-ce\n\
+      # https://docs.docker.com/engine/installation/linux/linux-postinstall/#allow-access-to-the-remote-api-through-a-firewall\n\
+      sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n\
+      yum-config-manager --enable docker-ce-edge\nyum-config-manager —-enable docker-ce-test\n\
+      \n# Refresh the cache:\nsudo yum makecache fast\nyum list docker-ce.x86_64 \
+      \ --showduplicates |sort -r\nyum install -y docker-ce\nyum clean all\nrm -rf\
+      \ /var/cache/yum\n\ncurl -L https://github.com/docker/compose/releases/download/$docker_compose_version/docker-compose-`uname\
+      \ -s`-`uname -m` -o /usr/local/bin/docker-compose\nchmod +x /usr/local/bin/docker-compose\n"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "INSTALL"
+    label: "Install"

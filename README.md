@@ -1,1 +1,0 @@
-# Kubernetes-Blueprint-for-vRealize-Automation

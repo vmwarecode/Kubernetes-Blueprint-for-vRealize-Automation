@@ -1,0 +1,213 @@
+id: Kubernetes
+name: Kubernetes
+description: Installs current Kubernetes on CentOS 7
+status: PUBLISHED
+components:
+  1534External:
+    type: Infrastructure.Network.Network.Existing
+    data:
+      name:
+        fixed: 1534External
+      network_profile:
+        fixed: 1534-External
+  CentOS_Docker_master:
+    type: Software.CentOSDocker
+    data:
+      host:
+        fixed: ${_resource~K8s-Master}
+  CentOS_Docker_node:
+    type: Software.CentOSDocker
+    data:
+      host:
+        fixed: ${_resource~K8s-Node}
+  CentOS_K8s_Master:
+    type: Software.CentOSK8sMaster
+    data:
+      host:
+        fixed: ${_resource~CentOS_K8s_base_master}
+      masterIpAddress:
+        default: ${_resource~K8s-Master~ip_address}
+        required: true
+      netPlugin:
+        default: ''
+        required: true
+        visible: true
+  CentOS_K8s_Node:
+    type: Software.CentOSK8sNode
+    dependsOn:
+    - CentOS_K8s_Master
+    data:
+      host:
+        fixed: ${_resource~CentOS_K8s_base_node}
+      joinCommand:
+        default: ${_resource~CentOS_K8s_Master~joinCommand}
+        editable: true
+        required: true
+  CentOS_K8s_base_master:
+    type: Software.CentOSInstallkubectl
+    data:
+      host:
+        fixed: ${_resource~CentOS_Docker_master}
+  CentOS_K8s_base_node:
+    type: Software.CentOSInstallkubectl
+    data:
+      host:
+        fixed: ${_resource~CentOS_Docker_node}
+  K8s-Master:
+    type: Infrastructure.CatalogItem.Machine.Virtual.vSphere
+    data:
+      _cluster:
+        default: 1
+        max: 1
+        min: 1
+      action:
+        fixed: LinkedClone
+      allow_storage_policies:
+        fixed: false
+      blueprint_type:
+        fixed: '1'
+      cpu:
+        default: 2
+        max: 2
+        min: 2
+      description: Kubernetes Master
+      disks:
+      - capacity: 40
+        custom_properties: null
+        id: 1533228507322
+        initial_location: ''
+        is_clone: true
+        label: Hard disk 1
+        storage_reservation_policy: ''
+        userCreated: false
+        volumeId: 0
+      guest_customization_specification: CentOS
+      machine_prefix:
+        fixed:
+          id: k8m-
+      max_network_adapters: {}
+      max_volumes: {}
+      memory:
+        default: 2048
+        max: 4096
+        min: 2048
+      nics:
+      - address: ''
+        assignment_type: Static
+        id: 0
+        load_balancing: ''
+        network: ${_resource~1534External}
+        network_profile: 1534-External
+      provisioning_workflow:
+        fixed:
+          id: CloneWorkflow
+          label: CloneWorkflow
+      security_groups: []
+      security_tags: []
+      snapshot_name:
+        fixed: base
+      source_machine:
+        fixed:
+          id: 8842b52d-de29-490f-892d-37aef7809a5d
+          label: centos-7-64-base
+      source_machine_external_snapshot:
+        fixed: 1
+      source_machine_name:
+        fixed: centos-7-64-base
+      source_machine_vmsnapshot:
+        fixed:
+          id: '9'
+      storage:
+        default: 40
+        max: 40
+        min: 40
+  K8s-Node:
+    type: Infrastructure.CatalogItem.Machine.Virtual.vSphere
+    data:
+      _cluster:
+        default: 2
+        max: 10
+        min: 2
+      action:
+        fixed: LinkedClone
+      allow_storage_policies:
+        fixed: false
+      blueprint_type:
+        fixed: '1'
+      cpu:
+        default: 1
+        max: 1
+        min: 1
+      description: Kubernetes Node
+      disks:
+      - capacity: 40
+        custom_properties: null
+        id: 1533238162957
+        initial_location: ''
+        is_clone: true
+        label: Hard disk 1
+        storage_reservation_policy: ''
+        userCreated: false
+        volumeId: 0
+      guest_customization_specification: CentOS
+      machine_prefix:
+        fixed:
+          id: k8n-
+      max_network_adapters: {}
+      max_volumes: {}
+      memory:
+        default: 2048
+        max: 4096
+        min: 2048
+      nics:
+      - address: ''
+        assignment_type: Static
+        id: 0
+        load_balancing: ''
+        network: ${_resource~1534External}
+        network_profile: 1534-External
+      provisioning_workflow:
+        fixed:
+          id: CloneWorkflow
+          label: CloneWorkflow
+      security_groups: []
+      security_tags: []
+      snapshot_name:
+        fixed: base
+      source_machine:
+        fixed:
+          id: 8842b52d-de29-490f-892d-37aef7809a5d
+          label: centos-7-64-base
+      source_machine_external_snapshot:
+        fixed: 1
+      source_machine_name:
+        fixed: centos-7-64-base
+      source_machine_vmsnapshot:
+        fixed:
+          id: '9'
+      storage:
+        default: 40
+        max: 40
+        min: 40
+  Linux__Colorize_Console:
+    type: Software.LinuxColorizeConsole
+    data:
+      host:
+        fixed: ${_resource~K8s-Master}
+  Linux_helm_cli:
+    type: Software.Linuxhelmcli
+    data:
+      host:
+        fixed: ${_resource~K8s-Master}
+layout:
+  1534External: 1,0
+  CentOS_Docker_master: 1,0
+  CentOS_Docker_node: 0,0
+  CentOS_K8s_Master: 0,0
+  CentOS_K8s_Node: 0,0
+  CentOS_K8s_base_master: 0,0
+  CentOS_K8s_base_node: 0,0
+  K8s-Master: 0,1
+  K8s-Node: 0,2
+  Linux__Colorize_Console: 0,0
+  Linux_helm_cli: 2,0

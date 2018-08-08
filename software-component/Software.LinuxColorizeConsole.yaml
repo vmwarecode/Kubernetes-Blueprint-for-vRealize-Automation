@@ -1,0 +1,60 @@
+'@type': "SoftwareComponentType"
+createdDate: "2018-07-31T21:52:27.307Z"
+lastUpdated: "2018-08-03T20:12:43.269Z"
+id: "Software.LinuxColorizeConsole"
+name: "Linux: Colorize Console"
+description: ""
+publishStatus: "PUBLISHED"
+publishStatusName: "Published"
+schema:
+  fields:
+  - id: "host"
+    label: "Container"
+    description: ""
+    dataType:
+      type: "ref"
+      componentTypeId: "com.vmware.csp.iaas.blueprint.service"
+      classId: "Infrastructure.Machine.Schema"
+      label: "Machine"
+    state:
+      dependencies: []
+      facets:
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
+      - type: "internal"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
+    isMultiValued: false
+containerFieldId: "host"
+lifecycleTasks:
+- createdDate: "2018-07-31T21:52:27.308Z"
+  lastUpdated: "2018-08-03T20:12:43.269Z"
+  script:
+    scriptContent: "#!/bin/bash\ncat > /etc/profile.d/alias.sh << \"EOF\"\n# Colorize\
+      \ the console:\nalias less='less --RAW-CONTROL-CHARS'\nalias ls='ls --color=auto'\n\
+      \n# Colorize the prompt: (source: Michael Durant reply here: https://unix.stackexchange.com/questions/148/colorizing-your-terminal-and-shell-environment)\n\
+      git_branch () { git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \\(.*\\\
+      )/\\1/'; }\nHOST='\\033[02;36m\\]\\h'; HOST=' '$HOST\nTIME='\\033[01;31m\\]\\\
+      t \\033[01;32m\\]'\nLOCATION=' \\033[01;34m\\]`pwd | sed \"s#\\(/[^/]\\{1,\\\
+      }/[^/]\\{1,\\}/[^/]\\{1,\\}/\\).*\\(/[^/]\\{1,\\}/[^/]\\{1,\\}\\)/\\{0,1\\}#\\\
+      1_\\2#g\"`'\nBRANCH=' \\033[00;33m\\]$(git_branch)\\[\\033[00m\\]\\n\\$ '\n\
+      PS1=$TIME$USER$HOST$LOCATION$BRANCH\nPS2='\\[\\033[01;36m\\]>'\nEOF\n\nchmod\
+      \ 644 /etc/profile.d/alias.sh\n"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "INSTALL"
+    label: "Install"

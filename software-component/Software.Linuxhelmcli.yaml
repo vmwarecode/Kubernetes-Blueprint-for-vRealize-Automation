@@ -1,0 +1,53 @@
+'@type': "SoftwareComponentType"
+createdDate: "2018-08-07T17:11:01.176Z"
+lastUpdated: "2018-08-07T17:13:28.417Z"
+id: "Software.Linuxhelmcli"
+name: "Linux: helm cli"
+description: "Installs the helm CLI"
+publishStatus: "PUBLISHED"
+publishStatusName: "Published"
+schema:
+  fields:
+  - id: "host"
+    label: "Container"
+    description: ""
+    dataType:
+      type: "ref"
+      componentTypeId: "com.vmware.csp.iaas.blueprint.service"
+      classId: "Infrastructure.Machine.Schema"
+      label: "Machine"
+    state:
+      dependencies: []
+      facets:
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
+      - type: "internal"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
+    isMultiValued: false
+containerFieldId: "host"
+lifecycleTasks:
+- createdDate: "2018-08-07T17:11:01.177Z"
+  lastUpdated: "2018-08-07T18:11:58.318Z"
+  script:
+    scriptContent: "#!/bin/bash\n# Install helm CLI\nwget https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-rc.2-linux-amd64.tar.gz\
+      \ -O helm.tgz\ntar -zxvf helm.tgz\n\nmv linux-amd64/helm /usr/local/bin/helm\n\
+      helm init\necho Installed `helm version`"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "INSTALL"
+    label: "Install"

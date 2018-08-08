@@ -1,0 +1,74 @@
+'@type': "SoftwareComponentType"
+createdDate: "2018-07-25T06:22:00.618Z"
+lastUpdated: "2018-08-03T20:04:06.901Z"
+id: "Software.CentOSInstallkubectl"
+name: "CentOS: Install K8s base"
+description: "Install Kubernetes commands on CentOS"
+publishStatus: "PUBLISHED"
+publishStatusName: "Published"
+schema:
+  fields:
+  - id: "host"
+    label: "Container"
+    description: ""
+    dataType:
+      type: "ref"
+      componentTypeId: "com.vmware.csp.component.software.service"
+      classId: "softwareResourceType"
+      typeFilter: "Software.CentOSDocker"
+      label: "CentOS: Docker"
+    state:
+      dependencies: []
+      facets:
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
+      - type: "internal"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
+    isMultiValued: false
+containerFieldId: "host"
+lifecycleTasks:
+- createdDate: "2018-07-25T06:22:00.619Z"
+  lastUpdated: "2018-08-08T19:10:30.088Z"
+  script:
+    scriptContent: "#!/bin/bash\n# Stop and disable the firewall\nsystemctl stop firewalld\n\
+      systemctl disable firewalld\n\n# Disable SELinux\nsetenforce 0\nsed -i --follow-symlinks\
+      \ 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux\n# Disable\
+      \ Swap\nsudo swapoff --all\nsudo sed -ri '/\\sswap\\s/s/^#?/#/' /etc/fstab\n\
+      # Enable br_netfilter Kernel Module\nmodprobe br_netfilter\necho '1' > /proc/sys/net/bridge/bridge-nf-call-iptables\n\
+      \ncat <<EOF > /etc/yum.repos.d/kubernetes.repo\n[kubernetes]\nname=Kubernetes\n\
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64\n\
+      enabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg\
+      \ https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg\nEOF\n\n# Install\
+      \ kubectl, kubelet, and kubeadm\nyum install -y kubectl kubelet kubeadm\n\n\
+      # REBOOT HERE"
+    isRebootAfter: true
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "INSTALL"
+    label: "Install"
+- createdDate: "2018-08-01T14:54:32.701Z"
+  lastUpdated: "2018-08-08T19:10:30.088Z"
+  script:
+    scriptContent: "#!/bin/bash\nsystemctl start docker && systemctl enable docker\n\
+      systemctl start kubelet && systemctl enable kubelet\n\necho cgroup-driver=cgroupfs\
+      \ >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf\n\nsystemctl daemon-reload\n\
+      systemctl restart kubelet"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "START"
+    label: "Start"
