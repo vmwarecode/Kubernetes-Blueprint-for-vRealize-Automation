@@ -1,6 +1,6 @@
 '@type': "SoftwareComponentType"
-createdDate: "2018-08-02T19:27:17.392Z"
-lastUpdated: "2018-08-02T19:27:24.042Z"
+createdDate: "2018-08-14T21:48:14.654Z"
+lastUpdated: "2018-08-14T21:48:14.763Z"
 id: "Software.CentOSK8sNode"
 name: "CentOS: K8s Node"
 description: "Requires K8s Base to be installed"
@@ -20,12 +20,6 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "visible"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: false
       - type: "mandatory"
         value:
           type: "constant"
@@ -38,6 +32,12 @@ schema:
           value:
             type: "boolean"
             value: true
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
     isMultiValued: false
   - id: "joinCommand"
     label: "joinCommand"
@@ -48,12 +48,6 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "mandatory"
-        value:
-          type: "constant"
-          value:
-            type: "boolean"
-            value: true
       - type: "editable"
         value:
           type: "constant"
@@ -63,11 +57,17 @@ schema:
       - type: "defaultValue"
         value:
           type: "constant"
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
-- createdDate: "2018-08-02T19:27:17.392Z"
-  lastUpdated: "2018-08-07T20:25:17.864Z"
+- createdDate: "2018-08-14T21:48:14.655Z"
+  lastUpdated: "2018-08-14T21:48:14.655Z"
   script:
     scriptContent: "#!/bin/bash\n# If these next couple lines aren't included, component\
       \ fails due to \n# not finding init system\nsource /root/.bash_profile\nPATH=$PATH:/usr/sbin\n\

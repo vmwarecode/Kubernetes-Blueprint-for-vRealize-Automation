@@ -1,6 +1,6 @@
 '@type': "SoftwareComponentType"
-createdDate: "2018-07-31T21:52:27.307Z"
-lastUpdated: "2018-08-03T20:12:43.269Z"
+createdDate: "2018-08-14T21:48:14.233Z"
+lastUpdated: "2018-08-14T21:48:14.324Z"
 id: "Software.LinuxColorizeConsole"
 name: "Linux: Colorize Console"
 description: ""
@@ -19,12 +19,6 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "visible"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: false
       - type: "mandatory"
         value:
           type: "constant"
@@ -37,11 +31,17 @@ schema:
           value:
             type: "boolean"
             value: true
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
-- createdDate: "2018-07-31T21:52:27.308Z"
-  lastUpdated: "2018-08-03T20:12:43.269Z"
+- createdDate: "2018-08-14T21:48:14.234Z"
+  lastUpdated: "2018-08-14T21:48:14.234Z"
   script:
     scriptContent: "#!/bin/bash\ncat > /etc/profile.d/alias.sh << \"EOF\"\n# Colorize\
       \ the console:\nalias less='less --RAW-CONTROL-CHARS'\nalias ls='ls --color=auto'\n\

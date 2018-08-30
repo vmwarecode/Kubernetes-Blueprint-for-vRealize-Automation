@@ -1,6 +1,6 @@
 '@type': "SoftwareComponentType"
-createdDate: "2018-08-07T17:11:01.176Z"
-lastUpdated: "2018-08-07T17:13:28.417Z"
+createdDate: "2018-08-14T21:48:13.537Z"
+lastUpdated: "2018-08-14T21:48:13.685Z"
 id: "Software.Linuxhelmcli"
 name: "Linux: helm cli"
 description: "Installs the helm CLI"
@@ -19,12 +19,6 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "visible"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: false
       - type: "mandatory"
         value:
           type: "constant"
@@ -37,15 +31,21 @@ schema:
           value:
             type: "boolean"
             value: true
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
-- createdDate: "2018-08-07T17:11:01.177Z"
-  lastUpdated: "2018-08-07T18:11:58.318Z"
+- createdDate: "2018-08-14T21:48:13.539Z"
+  lastUpdated: "2018-08-24T04:40:27.920Z"
   script:
     scriptContent: "#!/bin/bash\n# Install helm CLI\nwget https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-rc.2-linux-amd64.tar.gz\
       \ -O helm.tgz\ntar -zxvf helm.tgz\n\nmv linux-amd64/helm /usr/local/bin/helm\n\
-      helm init\necho Installed `helm version`"
+      \necho Installed `helm version`\necho You must run helm init to begin using"
     isRebootAfter: false
     scriptTypeId: "Bash"
   taskDescriptorRef:

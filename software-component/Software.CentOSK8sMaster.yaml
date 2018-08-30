@@ -1,6 +1,6 @@
 '@type': "SoftwareComponentType"
-createdDate: "2018-08-02T19:24:59.798Z"
-lastUpdated: "2018-08-08T19:09:19.442Z"
+createdDate: "2018-08-14T21:48:14.411Z"
+lastUpdated: "2018-08-14T21:48:14.543Z"
 id: "Software.CentOSK8sMaster"
 name: "CentOS: K8s Master"
 description: "Requires K8s Base to be installed"
@@ -20,12 +20,6 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "visible"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: false
       - type: "mandatory"
         value:
           type: "constant"
@@ -38,6 +32,12 @@ schema:
           value:
             type: "boolean"
             value: true
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
     isMultiValued: false
   - id: "joinCommand"
     label: "joinCommand"
@@ -48,15 +48,15 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "derivedValue"
-        value:
-          type: "constant"
       - type: "editable"
         value:
           type: "constant"
           value:
             type: "boolean"
             value: false
+      - type: "derivedValue"
+        value:
+          type: "constant"
     isMultiValued: false
   - id: "netPlugin"
     label: "netPlugin"
@@ -67,18 +67,18 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "mandatory"
-        value:
-          type: "constant"
-          value:
-            type: "boolean"
-            value: true
       - type: "defaultValue"
         value:
           type: "constant"
           value:
             type: "string"
             value: ""
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
     isMultiValued: false
   - id: "masterIpAddress"
     label: "masterIpAddress"
@@ -89,41 +89,44 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "mandatory"
-        value:
-          type: "constant"
-          value:
-            type: "boolean"
-            value: true
       - type: "defaultValue"
         value:
           type: "constant"
           value:
             type: "string"
             value: ""
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
-- createdDate: "2018-08-02T19:24:59.801Z"
-  lastUpdated: "2018-08-08T20:30:47.306Z"
+- createdDate: "2018-08-14T21:48:14.413Z"
+  lastUpdated: "2018-08-28T15:18:24.198Z"
   script:
-    scriptContent: "#!/bin/bash\ncase $netPlugin in\n    Calico)\n        podNetCidr=\"\
-      192.168.0.0/16\"\n        # echo \"Flannel Chosen, setting pod network to \"\
-      \ $podNetCidr\n        ;;\n    *)\n        podNetCidr=\"10.244.0.0/16\"\n  \
-      \      # echo $netPlugin \"Chosen, setting pod network to \" $podNetCidr\n \
-      \       ;;\nesac\necho $netPlugin \"Chosen, setting pod network to \" $podNetCidr\n\
-      \nsource /root/.bash_profile\nPATH=$PATH:/usr/sbin\nexport PATH\n\n# Enable\
-      \ br_netfilter Kernel Module\nmodprobe br_netfilter\necho '1' > /proc/sys/net/bridge/bridge-nf-call-iptables\n\
-      \necho running command: kubeadm init --apiserver-advertise-address=$masterIpAddress\
-      \ --pod-network-cidr=$podNetCidr\nkubeadm init --apiserver-advertise-address=$masterIpAddress\
-      \ --pod-network-cidr=$podNetCidr >> /root/kubeadm-init.txt\n\n# Retrieve the\
-      \ join command\njoinCommand=`grep \"kubeadm join\" /root/kubeadm-init.txt |\
-      \ sed -e 's/^[ \\t]*//'`\n\n# Setup the root account for running Kubernetes\
-      \ commands:\nmkdir -p /root/.kube\nsudo cp -i /etc/kubernetes/admin.conf /root/.kube/config\n\
-      sudo chown $(id -u):$(id -g) /root/.kube/config\nexport KUBECONFIG=$KUBECONFIG:/root/.kube/config\n\
+    scriptContent: "#!/bin/bash\n#\n# I would like to be able to specify custom CIDR\
+      \ for ANY plugin\n# Currently Calico has been updated in the code below to use\
+      \ \n# 10.244.0.0/16 instead of the default 192.168.0.0/16\ncase $netPlugin in\n\
+      \    Calico)\n        #export podNetCidr=\"192.168.0.0/16\"\n        export\
+      \ podNetCidr=\"10.244.0.0/16\"\n        ;;\n    *)\n        export podNetCidr=\"\
+      10.244.0.0/16\"\n        ;;\nesac\necho $netPlugin \"Chosen, setting pod network\
+      \ to \" $podNetCidr\n\nsource /root/.bash_profile\nPATH=$PATH:/usr/sbin\nexport\
+      \ PATH\n\n# Enable br_netfilter Kernel Module\nmodprobe br_netfilter\necho '1'\
+      \ > /proc/sys/net/bridge/bridge-nf-call-iptables\n\necho running command: kubeadm\
+      \ init --apiserver-advertise-address=$masterIpAddress --pod-network-cidr=$podNetCidr\n\
+      kubeadm init --apiserver-advertise-address=$masterIpAddress --pod-network-cidr=$podNetCidr\
+      \ >> /root/kubeadm-init.txt\n\n# Retrieve the join command\njoinCommand=`grep\
+      \ \"kubeadm join\" /root/kubeadm-init.txt | sed -e 's/^[ \\t]*//'`\n\n# Setup\
+      \ the root account for running Kubernetes commands:\nmkdir -p /root/.kube\n\
+      sudo cp -i /etc/kubernetes/admin.conf /root/.kube/config\nsudo chown $(id -u):$(id\
+      \ -g) /root/.kube/config\nexport KUBECONFIG=$KUBECONFIG:/root/.kube/config\n\
       \n# Setup networking:\ncase $netPlugin in\n    Calico)\n        curl -L https://docs.projectcalico.org/v3.1/getting-started/kubernetes/installation/hosted/kubeadm/1.7/calico.yaml\
-      \ > /root/calico.yaml\n        kubectl apply -f /root/calico.yaml\n        ;;\n\
-      \    Flannel)\n        curl -L https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml\
+      \ > /root/calico.yaml\n        # Update yaml for new CIDR\n        sed -i \"\
+      s|192.168.0.0/16|$podNetCidr|g\" /root/calico.yaml\n        kubectl apply -f\
+      \ /root/calico.yaml\n        ;;\n    Flannel)\n        curl -L https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml\
       \ > /root/kube-flannel.yaml\n        kubectl apply -f /root/kube-flannel.yaml\n\
       \        ;;\n    Canal)\n        curl -L https://docs.projectcalico.org/v3.1/getting-started/kubernetes/installation/hosted/canal/canal.yaml\
       \ > /root/canal.yaml\n        kubectl apply -f /root/canal.yaml\n        ;;\n\

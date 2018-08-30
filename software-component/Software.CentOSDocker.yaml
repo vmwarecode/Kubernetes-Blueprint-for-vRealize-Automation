@@ -1,6 +1,6 @@
 '@type': "SoftwareComponentType"
-createdDate: "2018-08-03T20:00:33.988Z"
-lastUpdated: "2018-08-03T20:02:46.987Z"
+createdDate: "2018-08-14T21:48:13.794Z"
+lastUpdated: "2018-08-24T04:21:33.372Z"
 id: "Software.CentOSDocker"
 name: "CentOS: Docker"
 description: "Installs Docker and Docker-Compose on CentOS"
@@ -8,6 +8,22 @@ publishStatus: "PUBLISHED"
 publishStatusName: "Published"
 schema:
   fields:
+  - id: "TCP_PORT"
+    label: "TCP_PORT"
+    description: "TCP Port for Docker Trusted Registry"
+    dataType:
+      type: "primitive"
+      typeId: "STRING"
+    state:
+      dependencies: []
+      facets:
+      - type: "defaultValue"
+        value:
+          type: "constant"
+          value:
+            type: "string"
+            value: "443"
+    isMultiValued: false
   - id: "host"
     label: "Container"
     description: ""
@@ -19,38 +35,45 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "visible"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: false
-      - type: "mandatory"
-        value:
-          type: "constant"
-          value:
-            type: "boolean"
-            value: true
       - type: "internal"
         value:
           type: "constantClause"
           value:
             type: "boolean"
             value: true
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
+    isMultiValued: false
+  - id: "DOMAIN_NAME"
+    label: "DOMAIN_NAME"
+    description: "FQDN of internal Docker Trusted Registery"
+    dataType:
+      type: "primitive"
+      typeId: "STRING"
+    state:
+      dependencies: []
+      facets:
+      - type: "defaultValue"
+        value:
+          type: "constant"
+          value:
+            type: "string"
+            value: "vic.corp.local"
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
-- createdDate: "2018-08-03T20:00:33.990Z"
-  lastUpdated: "2018-08-03T20:00:33.990Z"
-  script:
-    scriptContent: "#!/bin/bash\nsystemctl start docker\nsystemctl enable docker\n"
-    isRebootAfter: false
-    scriptTypeId: "Bash"
-  taskDescriptorRef:
-    id: "START"
-    label: "Start"
-- createdDate: "2018-08-03T20:00:33.989Z"
-  lastUpdated: "2018-08-03T20:00:33.989Z"
+- createdDate: "2018-08-14T21:48:13.794Z"
+  lastUpdated: "2018-08-24T04:21:33.372Z"
   script:
     scriptContent: "#!/bin/bash\n# Set ENV variables:\ndocker_compose_version=1.22.0\n\
       \n# Update system\necho \"updating system and installing essentials\"\nyum install\
@@ -70,3 +93,24 @@ lifecycleTasks:
   taskDescriptorRef:
     id: "INSTALL"
     label: "Install"
+- createdDate: "2018-08-24T04:21:33.017Z"
+  lastUpdated: "2018-08-24T04:21:33.017Z"
+  script:
+    scriptContent: "#!/bin/bash\necho Retrieving SSL Cert from $DOMAIN_NAME\nopenssl\
+      \ s_client -connect $DOMAIN_NAME:$TCP_PORT -showcerts </dev/null 2>/dev/null\
+      \ | openssl x509 -outform PEM | tee /etc/pki/ca-trust/source/anchors/$DOMAIN_NAME.crt\n\
+      update-ca-trust\n/bin/systemctl restart docker.service"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "CONFIGURE"
+    label: "Configure"
+- createdDate: "2018-08-14T21:48:13.795Z"
+  lastUpdated: "2018-08-24T04:21:33.373Z"
+  script:
+    scriptContent: "#!/bin/bash\nsystemctl start docker\nsystemctl enable docker\n"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "START"
+    label: "Start"
