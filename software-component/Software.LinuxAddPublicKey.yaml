@@ -1,0 +1,94 @@
+'@type': "SoftwareComponentType"
+id: "Software.LinuxAddPublicKey"
+name: "Linux: Add Public Key"
+description: "This software component will add the provided public key text to the\
+  \ /root/.ssh/authorized_keys file (or the path/file provided by override)"
+publishStatus: "PUBLISHED"
+createdDate: "2018-08-22T17:00:20.777Z"
+lastUpdated: "2018-10-23T18:37:55.755Z"
+publishStatusName: "Published"
+schema:
+  fields:
+  - id: "pub_key_text"
+    label: "pub_key_text"
+    description: "Text of Public Key to be added to authorized_keys"
+    dataType:
+      type: "primitive"
+      typeId: "STRING"
+    state:
+      dependencies: []
+      facets:
+      - type: "defaultValue"
+        value:
+          type: "constant"
+          value:
+            type: "string"
+            value: ""
+    isMultiValued: false
+  - id: "auth_key_path"
+    label: "auth_key_path"
+    description: "Path to SSH authorized_keys file"
+    dataType:
+      type: "primitive"
+      typeId: "STRING"
+    state:
+      dependencies: []
+      facets:
+      - type: "defaultValue"
+        value:
+          type: "constant"
+          value:
+            type: "string"
+            value: "/root/.ssh/authorized_keys"
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: false
+    isMultiValued: false
+  - id: "host"
+    label: "Container"
+    description: ""
+    dataType:
+      type: "ref"
+      componentTypeId: "com.vmware.csp.iaas.blueprint.service"
+      classId: "Infrastructure.Machine.Schema"
+      label: "Machine"
+    state:
+      dependencies: []
+      facets:
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
+      - type: "visible"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: false
+      - type: "internal"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
+    isMultiValued: false
+containerFieldId: "host"
+lifecycleTasks:
+- createdDate: "2018-08-22T17:00:20.787Z"
+  lastUpdated: "2018-10-23T18:37:55.755Z"
+  script:
+    scriptContent: "#!/bin/bash\nexport PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n\
+      if [ \"$pub_key_text\" ]; then\n  echo \"pub_key_text provided: $pub_key_text\"\
+      \n  echo \"Added to: $auth_key_path\"\n  mkdir -p $(dirname \"${auth_key_path}\"\
+      )\n  echo $pub_key_text >> $auth_key_path\nelse\n  echo \"pub_key_text empty:\
+      \ $pub_key_text\"\nfi"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "INSTALL"
+    label: "Install"

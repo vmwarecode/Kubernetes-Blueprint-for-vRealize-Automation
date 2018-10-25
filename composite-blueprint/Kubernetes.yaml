@@ -3,18 +3,23 @@ name: Kubernetes
 description: Installs current Kubernetes on CentOS 7
 status: PUBLISHED
 components:
+  1534External:
+    type: Infrastructure.Network.Network.Existing
+    data:
+      name:
+        fixed: 1534External
+      network_profile:
+        fixed: 1534-External
   CentOS_Docker_master:
     type: Software.CentOSDocker
+    dependsOn:
+    - Linux__Colorize_Console
     data:
-      DOMAIN_NAME: vic.corp.local
-      TCP_PORT: '443'
       host:
         fixed: ${_resource~K8s-Master}
   CentOS_Docker_node:
     type: Software.CentOSDocker
     data:
-      DOMAIN_NAME: vic.corp.local
-      TCP_PORT: '443'
       host:
         fixed: ${_resource~K8s-Node}
   CentOS_K8s_Master:
@@ -64,14 +69,14 @@ components:
       blueprint_type:
         fixed: '1'
       cpu:
-        default: 2
+        default: 1
         max: 2
-        min: 2
+        min: 1
       description: Kubernetes Master
       disks:
-      - capacity: 16
+      - capacity: 40
         custom_properties: null
-        id: 1534297451676
+        id: 1540315870133
         initial_location: ''
         is_clone: true
         label: Hard disk 1
@@ -81,7 +86,7 @@ components:
       guest_customization_specification: CentOS
       machine_prefix:
         fixed:
-          id: k8M-
+          id: k8m-
       max_network_adapters: {}
       max_volumes: {}
       memory:
@@ -93,8 +98,8 @@ components:
         assignment_type: Static
         id: 0
         load_balancing: ''
-        network: ${_resource~corp192168110024}
-        network_profile: corp-192.168.110.0/24
+        network: ${_resource~1534External}
+        network_profile: 1534-External
       provisioning_workflow:
         fixed:
           id: CloneWorkflow
@@ -102,28 +107,28 @@ components:
       security_groups: []
       security_tags: []
       snapshot_name:
-        fixed: base
+        fixed: Base
       source_machine:
         fixed:
-          id: 8020b658-7222-4ca0-94ee-00b8a54ce1e8
-          label: CentOS7-base-vm
+          id: 8842b52d-de29-490f-892d-37aef7809a5d
+          label: centos7-base
       source_machine_external_snapshot:
         fixed: 2
       source_machine_name:
-        fixed: CentOS7-base-vm
+        fixed: centos7-base
       source_machine_vmsnapshot:
         fixed:
-          id: '4014'
+          id: '19'
       storage:
-        default: 16
+        default: 40
         max: 40
-        min: 16
+        min: 40
   K8s-Node:
     type: Infrastructure.CatalogItem.Machine.Virtual.vSphere
     data:
       _cluster:
         default: 2
-        max: 5
+        max: 10
         min: 2
       action:
         fixed: LinkedClone
@@ -133,13 +138,13 @@ components:
         fixed: '1'
       cpu:
         default: 1
-        max: 2
+        max: 1
         min: 1
-      description: Kubernetes Worker Node
+      description: Kubernetes Node
       disks:
-      - capacity: 16
+      - capacity: 40
         custom_properties: null
-        id: 1534297488764
+        id: 1540315888485
         initial_location: ''
         is_clone: true
         label: Hard disk 1
@@ -149,20 +154,20 @@ components:
       guest_customization_specification: CentOS
       machine_prefix:
         fixed:
-          id: k8W-
+          id: k8n-
       max_network_adapters: {}
       max_volumes: {}
       memory:
-        default: 1024
+        default: 2048
         max: 4096
-        min: 1024
+        min: 2048
       nics:
       - address: ''
         assignment_type: Static
         id: 0
         load_balancing: ''
-        network: ${_resource~corp192168110024}
-        network_profile: corp-192.168.110.0/24
+        network: ${_resource~1534External}
+        network_profile: 1534-External
       provisioning_workflow:
         fixed:
           id: CloneWorkflow
@@ -170,22 +175,36 @@ components:
       security_groups: []
       security_tags: []
       snapshot_name:
-        fixed: base
+        fixed: Base
       source_machine:
         fixed:
-          id: 8020b658-7222-4ca0-94ee-00b8a54ce1e8
-          label: CentOS7-base-vm
+          id: 8842b52d-de29-490f-892d-37aef7809a5d
+          label: centos7-base
       source_machine_external_snapshot:
         fixed: 2
       source_machine_name:
-        fixed: CentOS7-base-vm
+        fixed: centos7-base
       source_machine_vmsnapshot:
         fixed:
-          id: '4014'
+          id: '19'
       storage:
-        default: 16
+        default: 40
         max: 40
-        min: 16
+        min: 40
+  Linux__Add_Public_Key_1:
+    type: Software.LinuxAddPublicKey
+    dependsOn:
+    - Linux_helm_cli
+    data:
+      auth_key_path:
+        default: /root/.ssh/authorized_keys
+        required: true
+        visible: true
+      host:
+        fixed: ${_resource~K8s-Master}
+      pub_key_text:
+        default: ''
+        visible: true
   Linux__Colorize_Console:
     type: Software.LinuxColorizeConsole
     data:
@@ -193,17 +212,13 @@ components:
         fixed: ${_resource~K8s-Master}
   Linux_helm_cli:
     type: Software.Linuxhelmcli
+    dependsOn:
+    - CentOS_K8s_Master
     data:
       host:
         fixed: ${_resource~K8s-Master}
-  corp192168110024:
-    type: Infrastructure.Network.Network.Existing
-    data:
-      name:
-        fixed: corp192168110024
-      network_profile:
-        fixed: corp-192.168.110.0/24
 layout:
+  1534External: 1,0
   CentOS_Docker_master: 1,0
   CentOS_Docker_node: 0,0
   CentOS_K8s_Master: 0,0
@@ -212,6 +227,6 @@ layout:
   CentOS_K8s_base_node: 0,0
   K8s-Master: 0,1
   K8s-Node: 0,2
+  Linux__Add_Public_Key_1: 3,0
   Linux__Colorize_Console: 0,0
   Linux_helm_cli: 2,0
-  corp192168110024: 1,0

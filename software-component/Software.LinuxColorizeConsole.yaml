@@ -1,10 +1,10 @@
 '@type': "SoftwareComponentType"
-createdDate: "2018-08-14T21:48:14.233Z"
-lastUpdated: "2018-08-14T21:48:14.324Z"
 id: "Software.LinuxColorizeConsole"
 name: "Linux: Colorize Console"
 description: ""
 publishStatus: "PUBLISHED"
+createdDate: "2018-07-31T21:52:27.307Z"
+lastUpdated: "2018-08-03T20:12:43.269Z"
 publishStatusName: "Published"
 schema:
   fields:
@@ -40,8 +40,8 @@ schema:
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
-- createdDate: "2018-08-14T21:48:14.234Z"
-  lastUpdated: "2018-08-14T21:48:14.234Z"
+- createdDate: "2018-07-31T21:52:27.308Z"
+  lastUpdated: "2018-08-03T20:12:43.269Z"
   script:
     scriptContent: "#!/bin/bash\ncat > /etc/profile.d/alias.sh << \"EOF\"\n# Colorize\
       \ the console:\nalias less='less --RAW-CONTROL-CHARS'\nalias ls='ls --color=auto'\n\

@@ -1,10 +1,10 @@
 '@type': "SoftwareComponentType"
-createdDate: "2018-08-14T21:48:13.537Z"
-lastUpdated: "2018-08-14T21:48:13.685Z"
 id: "Software.Linuxhelmcli"
 name: "Linux: helm cli"
 description: "Installs the helm CLI"
 publishStatus: "PUBLISHED"
+createdDate: "2018-08-07T17:11:01.176Z"
+lastUpdated: "2018-08-07T17:13:28.417Z"
 publishStatusName: "Published"
 schema:
   fields:
@@ -40,12 +40,17 @@ schema:
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
-- createdDate: "2018-08-14T21:48:13.539Z"
-  lastUpdated: "2018-08-24T04:40:27.920Z"
+- createdDate: "2018-08-07T17:11:01.177Z"
+  lastUpdated: "2018-10-24T23:33:06.915Z"
   script:
-    scriptContent: "#!/bin/bash\n# Install helm CLI\nwget https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-rc.2-linux-amd64.tar.gz\
-      \ -O helm.tgz\ntar -zxvf helm.tgz\n\nmv linux-amd64/helm /usr/local/bin/helm\n\
-      \necho Installed `helm version`\necho You must run helm init to begin using"
+    scriptContent: "#!/bin/bash\nPATH=$PATH:/usr/sbin:/usr/bin:/usr/local/bin\n# Reference:\
+      \ https://www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager\n\
+      # Install helm CLI\nwget https://raw.githubusercontent.com/helm/helm/master/scripts/get\
+      \ -O install-helm.sh\nchmod u+x install-helm.sh\n./install-helm.sh\n\nexport\
+      \ KUBECONFIG=$KUBECONFIG:/root/.kube/config\n/usr/bin/kubectl -n kube-system\
+      \ create serviceaccount tiller\n/usr/bin/kubectl create clusterrolebinding tiller\
+      \ --clusterrole cluster-admin --serviceaccount=kube-system:tiller\n\n/usr/local/bin/helm\
+      \ init --service-account tiller\necho Installed `helm version`"
     isRebootAfter: false
     scriptTypeId: "Bash"
   taskDescriptorRef:
