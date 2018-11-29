@@ -1,4 +1,4 @@
-name: "auto-generated-pkg-34989ce4-eb96-4b7b-9407-2cb351e7d662"
+name: "Kubernetes"
 productVersion: "7.5.0-SNAPSHOT"
 data:
 - locator: "composite-blueprint/Kubernetes.yaml"
@@ -12,11 +12,8 @@ data:
   - "software-component/Software.CentOSInstallkubectl.yaml"
   - "software-component/Software.LinuxAddPublicKey.yaml"
   - "software-component/Software.Linuxhelmcli.yaml"
-- locator: "software-component/Software.CentOSDocker.yaml"
-  name: "CentOS: Docker"
-  description: "Installs Docker and Docker-Compose on CentOS"
-- locator: "software-component/Software.CentOSK8sMaster.yaml"
-  name: "CentOS: K8s Master"
+- locator: "software-component/Software.CentOSK8sNode.yaml"
+  name: "CentOS: K8s Node"
   description: "Requires K8s Base to be installed"
   dependencies:
   - "software-component/Software.CentOSInstallkubectl.yaml"
@@ -25,19 +22,22 @@ data:
   description: "Install Kubernetes commands on CentOS"
   dependencies:
   - "software-component/Software.CentOSDocker.yaml"
+- locator: "software-component/Software.CentOSDocker.yaml"
+  name: "CentOS: Docker"
+  description: "Installs Docker and Docker-Compose on CentOS"
 - locator: "software-component/Software.Linuxhelmcli.yaml"
   name: "Linux: helm cli"
   description: "Installs the helm CLI"
-- locator: "software-component/Software.CentOSK8sNode.yaml"
-  name: "CentOS: K8s Node"
-  description: "Requires K8s Base to be installed"
-  dependencies:
-  - "software-component/Software.CentOSInstallkubectl.yaml"
 - locator: "software-component/Software.LinuxColorizeConsole.yaml"
   name: "Linux: Colorize Console"
   description: ""
+- locator: "software-component/Software.CentOSK8sMaster.yaml"
+  name: "CentOS: K8s Master"
+  description: "Requires K8s Base to be installed"
+  dependencies:
+  - "software-component/Software.CentOSInstallkubectl.yaml"
 - locator: "software-component/Software.LinuxAddPublicKey.yaml"
   name: "Linux: Add Public Key"
   description: "This software component will add the provided public key text to the\
     \ /root/.ssh/authorized_keys file (or the path/file provided by override)"
-exportTime: "2018-10-24T23:57:55.238Z"
+exportTime: "2018-11-28T23:57:41.669Z"

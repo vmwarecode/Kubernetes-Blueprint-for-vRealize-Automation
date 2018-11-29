@@ -3,8 +3,8 @@ id: "Software.CentOSDocker"
 name: "CentOS: Docker"
 description: "Installs Docker and Docker-Compose on CentOS"
 publishStatus: "PUBLISHED"
-createdDate: "2018-08-03T20:00:33.988Z"
-lastUpdated: "2018-08-03T20:02:46.987Z"
+createdDate: "2018-08-14T21:48:13.794Z"
+lastUpdated: "2018-11-28T20:46:07.072Z"
 publishStatusName: "Published"
 schema:
   fields:
@@ -19,15 +19,15 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "mandatory"
-        value:
-          type: "constant"
-          value:
-            type: "boolean"
-            value: true
       - type: "internal"
         value:
           type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
+      - type: "mandatory"
+        value:
+          type: "constant"
           value:
             type: "boolean"
             value: true
@@ -38,10 +38,33 @@ schema:
             type: "boolean"
             value: false
     isMultiValued: false
+  - id: "VERSION"
+    label: "VERSION"
+    description: "Docker 18.09.0 is not compatible with K8s 1.12.3 so defaulting to\
+      \ 18.6.0"
+    dataType:
+      type: "primitive"
+      typeId: "STRING"
+    state:
+      dependencies: []
+      facets:
+      - type: "mandatory"
+        value:
+          type: "constant"
+          value:
+            type: "boolean"
+            value: true
+      - type: "defaultValue"
+        value:
+          type: "constant"
+          value:
+            type: "string"
+            value: "18.06"
+    isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
-- createdDate: "2018-08-03T20:00:33.990Z"
-  lastUpdated: "2018-10-24T15:38:03.591Z"
+- createdDate: "2018-08-14T21:48:13.795Z"
+  lastUpdated: "2018-11-28T20:46:07.073Z"
   script:
     scriptContent: "#!/bin/bash\nsystemctl start docker\nsystemctl enable docker\n"
     isRebootAfter: false
@@ -49,8 +72,8 @@ lifecycleTasks:
   taskDescriptorRef:
     id: "START"
     label: "Start"
-- createdDate: "2018-08-03T20:00:33.989Z"
-  lastUpdated: "2018-10-24T15:38:03.591Z"
+- createdDate: "2018-08-14T21:48:13.794Z"
+  lastUpdated: "2018-11-28T20:46:07.073Z"
   script:
     scriptContent: "#!/bin/bash\n# Set ENV variables:\nexport docker_compose_version=1.22.0\n\
       \n# Update system\necho \"updating system and installing essentials\"\nyum install\
@@ -59,11 +82,13 @@ lifecycleTasks:
       yum reinstall -y systemd\nyum update --skip-broken -y\nsystemctl restart vmtoolsd\n\
       \n# Install Docker CE — https://docs.docker.com/engine/installation/linux/centos/#docker-ce\n\
       # https://docs.docker.com/engine/installation/linux/linux-postinstall/#allow-access-to-the-remote-api-through-a-firewall\n\
-      sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n\
-      yum-config-manager --enable docker-ce-edge\nyum-config-manager —-enable docker-ce-test\n\
-      \n# Refresh the cache:\nsudo yum makecache fast\nyum list docker-ce.x86_64 \
-      \ --showduplicates |sort -r\nyum install -y docker-ce\nyum clean all\nrm -rf\
-      \ /var/cache/yum\n\ncurl -L https://github.com/docker/compose/releases/download/$docker_compose_version/docker-compose-`uname\
+      #sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n\
+      #yum-config-manager --enable docker-ce-edge\n#yum-config-manager —-enable docker-ce-test\n\
+      \n# Refresh the cache:\n#sudo yum makecache fast\n#yum list docker-ce.x86_64\
+      \  --showduplicates |sort -r\n#yum install -y docker-ce\n#yum clean all\n#rm\
+      \ -rf /var/cache/yum\n\necho installing Docker from get.docker.com:\nexport\
+      \ VERSION=$VERSION\ncurl -sSL get.docker.com | sh\n\necho installed: $(docker\
+      \ -v)\ndocker -v\n\ncurl -L https://github.com/docker/compose/releases/download/$docker_compose_version/docker-compose-`uname\
       \ -s`-`uname -m` -o /usr/local/bin/docker-compose\nchmod +x /usr/local/bin/docker-compose\n"
     isRebootAfter: false
     scriptTypeId: "Bash"
