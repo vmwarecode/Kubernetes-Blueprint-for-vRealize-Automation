@@ -4,7 +4,7 @@ name: "CentOS: K8s Node"
 description: "Requires K8s Base to be installed"
 publishStatus: "PUBLISHED"
 createdDate: "2018-08-14T21:48:14.654Z"
-lastUpdated: "2018-11-28T16:53:16.372Z"
+lastUpdated: "2018-08-14T21:48:14.763Z"
 publishStatusName: "Published"
 schema:
   fields:
@@ -20,12 +20,6 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "internal"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: true
       - type: "mandatory"
         value:
           type: "constant"
@@ -38,6 +32,12 @@ schema:
           value:
             type: "boolean"
             value: false
+      - type: "internal"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
     isMultiValued: false
   - id: "joinCommand"
     label: "joinCommand"
@@ -57,9 +57,6 @@ schema:
       - type: "defaultValue"
         value:
           type: "constant"
-          value:
-            type: "string"
-            value: "placeholder text"
       - type: "editable"
         value:
           type: "constant"
@@ -70,7 +67,7 @@ schema:
 containerFieldId: "host"
 lifecycleTasks:
 - createdDate: "2018-08-14T21:48:14.655Z"
-  lastUpdated: "2018-11-28T21:26:39.990Z"
+  lastUpdated: "2018-08-14T21:48:14.655Z"
   script:
     scriptContent: "#!/bin/bash\n# If these next couple lines aren't included, component\
       \ fails due to \n# not finding init system\nsource /root/.bash_profile\nPATH=$PATH:/usr/sbin\n\

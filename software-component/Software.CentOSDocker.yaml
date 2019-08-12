@@ -4,10 +4,26 @@ name: "CentOS: Docker"
 description: "Installs Docker and Docker-Compose on CentOS"
 publishStatus: "PUBLISHED"
 createdDate: "2018-08-14T21:48:13.794Z"
-lastUpdated: "2018-11-28T20:46:07.072Z"
+lastUpdated: "2018-08-24T04:21:33.372Z"
 publishStatusName: "Published"
 schema:
   fields:
+  - id: "TCP_PORT"
+    label: "TCP_PORT"
+    description: "TCP Port for Docker Trusted Registry"
+    dataType:
+      type: "primitive"
+      typeId: "STRING"
+    state:
+      dependencies: []
+      facets:
+      - type: "defaultValue"
+        value:
+          type: "constant"
+          value:
+            type: "string"
+            value: "443"
+    isMultiValued: false
   - id: "host"
     label: "Container"
     description: ""
@@ -19,12 +35,6 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "internal"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: true
       - type: "mandatory"
         value:
           type: "constant"
@@ -37,34 +47,33 @@ schema:
           value:
             type: "boolean"
             value: false
+      - type: "internal"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
     isMultiValued: false
-  - id: "VERSION"
-    label: "VERSION"
-    description: "Docker 18.09.0 is not compatible with K8s 1.12.3 so defaulting to\
-      \ 18.6.0"
+  - id: "DOMAIN_NAME"
+    label: "DOMAIN_NAME"
+    description: "FQDN of internal Docker Trusted Registery"
     dataType:
       type: "primitive"
       typeId: "STRING"
     state:
       dependencies: []
       facets:
-      - type: "mandatory"
-        value:
-          type: "constant"
-          value:
-            type: "boolean"
-            value: true
       - type: "defaultValue"
         value:
           type: "constant"
           value:
             type: "string"
-            value: "18.06"
+            value: "vic.corp.local"
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
 - createdDate: "2018-08-14T21:48:13.795Z"
-  lastUpdated: "2018-11-28T20:46:07.073Z"
+  lastUpdated: "2019-08-12T18:58:08.113Z"
   script:
     scriptContent: "#!/bin/bash\nsystemctl start docker\nsystemctl enable docker\n"
     isRebootAfter: false
@@ -73,25 +82,41 @@ lifecycleTasks:
     id: "START"
     label: "Start"
 - createdDate: "2018-08-14T21:48:13.794Z"
-  lastUpdated: "2018-11-28T20:46:07.073Z"
+  lastUpdated: "2019-08-12T18:58:08.113Z"
   script:
-    scriptContent: "#!/bin/bash\n# Set ENV variables:\nexport docker_compose_version=1.22.0\n\
-      \n# Update system\necho \"updating system and installing essentials\"\nyum install\
-      \ -y net-tools deltarpm perl make open-vm-tools git yum-utils device-mapper-persistent-data\
-      \ lvm2 wget ntp unzip curl tar bzip2 hostname rsyslog openssl epel-release\n\
-      yum reinstall -y systemd\nyum update --skip-broken -y\nsystemctl restart vmtoolsd\n\
-      \n# Install Docker CE — https://docs.docker.com/engine/installation/linux/centos/#docker-ce\n\
+    scriptContent: "#!/bin/bash\n\n# Update system\necho \"updating system and installing\
+      \ essentials\"\nyum install -y net-tools deltarpm perl make open-vm-tools git\
+      \ yum-utils device-mapper-persistent-data lvm2 wget ntp unzip curl tar bzip2\
+      \ hostname rsyslog openssl epel-release bash-completion\nyum reinstall -y systemd\n\
+      yum update --skip-broken -y\nsystemctl restart vmtoolsd\n\n# Install Docker\
+      \ CE — https://docs.docker.com/engine/installation/linux/centos/#docker-ce\n\
       # https://docs.docker.com/engine/installation/linux/linux-postinstall/#allow-access-to-the-remote-api-through-a-firewall\n\
-      #sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n\
-      #yum-config-manager --enable docker-ce-edge\n#yum-config-manager —-enable docker-ce-test\n\
-      \n# Refresh the cache:\n#sudo yum makecache fast\n#yum list docker-ce.x86_64\
-      \  --showduplicates |sort -r\n#yum install -y docker-ce\n#yum clean all\n#rm\
-      \ -rf /var/cache/yum\n\necho installing Docker from get.docker.com:\nexport\
-      \ VERSION=$VERSION\ncurl -sSL get.docker.com | sh\n\necho installed: $(docker\
-      \ -v)\ndocker -v\n\ncurl -L https://github.com/docker/compose/releases/download/$docker_compose_version/docker-compose-`uname\
-      \ -s`-`uname -m` -o /usr/local/bin/docker-compose\nchmod +x /usr/local/bin/docker-compose\n"
+      sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n\
+      yum-config-manager --enable docker-ce-edge\nyum-config-manager —-enable docker-ce-test\n\
+      \n# Refresh the cache:\nsudo yum makecache fast\nyum list docker-ce.x86_64 \
+      \ --showduplicates |sort -r\nyum install -y docker-ce\nyum clean all\nrm -rf\
+      \ /var/cache/yum\n\n# Enable docker bash completion:\ncurl https://raw.githubusercontent.com/docker/docker-ce/master/components/cli/contrib/completion/bash/docker\
+      \ -o /etc/bash_completion.d/docker.sh\n# The following wget command retrieves\
+      \ the latest version number for docker-compose\nexport DOCKER_COMPOSE_VERSION=$(wget\
+      \ -qO- https://github.com/docker/compose/releases/latest | sed -nE 's|.*\"Recent\
+      \ Commits to compose:(.*)\\\" .*|\\1|p')\ncurl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname\
+      \ -s`-`uname -m` -o /usr/local/bin/docker-compose\nchmod +x /usr/local/bin/docker-compose\n\
+      # Enable bash completion for docker-compose\ncurl -L https://raw.githubusercontent.com/docker/compose/$DOCKER_COMPOSE_VERSION/contrib/completion/bash/docker-compose\
+      \ -o  /etc/bash_completion.d/docker-compose\n"
     isRebootAfter: false
     scriptTypeId: "Bash"
   taskDescriptorRef:
     id: "INSTALL"
     label: "Install"
+- createdDate: "2018-08-24T04:21:33.017Z"
+  lastUpdated: "2019-08-12T18:58:08.113Z"
+  script:
+    scriptContent: "#!/bin/bash\necho Retrieving SSL Cert from $DOMAIN_NAME\nopenssl\
+      \ s_client -connect $DOMAIN_NAME:$TCP_PORT -showcerts </dev/null 2>/dev/null\
+      \ | openssl x509 -outform PEM | tee /etc/pki/ca-trust/source/anchors/$DOMAIN_NAME.crt\n\
+      update-ca-trust\n/bin/systemctl restart docker.service"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "CONFIGURE"
+    label: "Configure"

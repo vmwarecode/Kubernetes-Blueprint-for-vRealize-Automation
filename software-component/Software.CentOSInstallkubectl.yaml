@@ -4,7 +4,7 @@ name: "CentOS: Install K8s base"
 description: "Install Kubernetes commands on CentOS"
 publishStatus: "PUBLISHED"
 createdDate: "2018-08-14T21:48:14.024Z"
-lastUpdated: "2018-11-28T16:22:32.378Z"
+lastUpdated: "2018-08-14T21:48:14.150Z"
 publishStatusName: "Published"
 schema:
   fields:
@@ -20,12 +20,6 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "internal"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: true
       - type: "mandatory"
         value:
           type: "constant"
@@ -38,11 +32,29 @@ schema:
           value:
             type: "boolean"
             value: false
+      - type: "internal"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
+- createdDate: "2018-08-14T21:48:14.026Z"
+  lastUpdated: "2018-08-14T21:48:14.026Z"
+  script:
+    scriptContent: "#!/bin/bash\nsystemctl start docker && systemctl enable docker\n\
+      systemctl start kubelet && systemctl enable kubelet\n\necho cgroup-driver=cgroupfs\
+      \ >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf\n\nsystemctl daemon-reload\n\
+      systemctl restart kubelet"
+    isRebootAfter: false
+    scriptTypeId: "Bash"
+  taskDescriptorRef:
+    id: "START"
+    label: "Start"
 - createdDate: "2018-08-14T21:48:14.024Z"
-  lastUpdated: "2018-11-28T16:22:32.378Z"
+  lastUpdated: "2018-08-14T21:48:14.024Z"
   script:
     scriptContent: "#!/bin/bash\n# Stop and disable the firewall\nsystemctl stop firewalld\n\
       systemctl disable firewalld\n\n# Disable SELinux\nsetenforce 0\nsed -i --follow-symlinks\
@@ -60,15 +72,3 @@ lifecycleTasks:
   taskDescriptorRef:
     id: "INSTALL"
     label: "Install"
-- createdDate: "2018-08-14T21:48:14.026Z"
-  lastUpdated: "2018-11-28T16:22:32.378Z"
-  script:
-    scriptContent: "#!/bin/bash\nsystemctl start docker && systemctl enable docker\n\
-      systemctl start kubelet && systemctl enable kubelet\n\necho cgroup-driver=cgroupfs\
-      \ >> /etc/systemd/system/kubelet.service.d/10-kubeadm.conf\n\nsystemctl daemon-reload\n\
-      systemctl restart kubelet"
-    isRebootAfter: false
-    scriptTypeId: "Bash"
-  taskDescriptorRef:
-    id: "START"
-    label: "Start"

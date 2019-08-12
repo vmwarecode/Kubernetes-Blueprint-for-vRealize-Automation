@@ -4,7 +4,7 @@ name: "Linux: Colorize Console"
 description: ""
 publishStatus: "PUBLISHED"
 createdDate: "2018-08-14T21:48:14.233Z"
-lastUpdated: "2018-11-28T16:22:32.598Z"
+lastUpdated: "2018-08-14T21:48:14.324Z"
 publishStatusName: "Published"
 schema:
   fields:
@@ -19,12 +19,6 @@ schema:
     state:
       dependencies: []
       facets:
-      - type: "internal"
-        value:
-          type: "constantClause"
-          value:
-            type: "boolean"
-            value: true
       - type: "mandatory"
         value:
           type: "constant"
@@ -37,11 +31,17 @@ schema:
           value:
             type: "boolean"
             value: false
+      - type: "internal"
+        value:
+          type: "constantClause"
+          value:
+            type: "boolean"
+            value: true
     isMultiValued: false
 containerFieldId: "host"
 lifecycleTasks:
 - createdDate: "2018-08-14T21:48:14.234Z"
-  lastUpdated: "2018-11-28T16:22:32.598Z"
+  lastUpdated: "2018-08-14T21:48:14.234Z"
   script:
     scriptContent: "#!/bin/bash\ncat > /etc/profile.d/alias.sh << \"EOF\"\n# Colorize\
       \ the console:\nalias less='less --RAW-CONTROL-CHARS'\nalias ls='ls --color=auto'\n\

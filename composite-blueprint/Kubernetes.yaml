@@ -8,17 +8,17 @@ components:
     dependsOn:
     - Linux__Colorize_Console
     data:
-      VERSION:
-        fixed: '18.06'
-        required: true
+      DOMAIN_NAME: vic.corp.local
+      TCP_PORT: '443'
       host:
         fixed: ${_resource~K8s-Master}
   CentOS_Docker_node:
     type: Software.CentOSDocker
+    dependsOn:
+    - Linux__Colorize_Console_1
     data:
-      VERSION:
-        fixed: '18.06'
-        required: true
+      DOMAIN_NAME: vic.corp.local
+      TCP_PORT: '443'
       host:
         fixed: ${_resource~K8s-Node}
   CentOS_K8s_Master:
@@ -27,7 +27,7 @@ components:
       host:
         fixed: ${_resource~CentOS_K8s_base_master}
       masterIpAddress:
-        fixed: ${_resource~K8s-Master~ip_address}
+        default: ${_resource~K8s-Master~ip_address}
         required: true
       netPlugin:
         default: ''
@@ -75,7 +75,7 @@ components:
       disks:
       - capacity: 16
         custom_properties: null
-        id: 1543425917804
+        id: 1552947766615
         initial_location: ''
         is_clone: true
         label: Hard disk 1
@@ -106,18 +106,18 @@ components:
       security_groups: []
       security_tags: []
       snapshot_name:
-        fixed: base
+        fixed: Base
       source_machine:
         fixed:
           id: 8020b658-7222-4ca0-94ee-00b8a54ce1e8
           label: CentOS7-base-vm
       source_machine_external_snapshot:
-        fixed: 3
+        fixed: 6
       source_machine_name:
         fixed: CentOS7-base-vm
       source_machine_vmsnapshot:
         fixed:
-          id: '4015'
+          id: '5024'
       storage:
         default: 16
         max: 40
@@ -127,7 +127,7 @@ components:
     data:
       _cluster:
         default: 2
-        max: 10
+        max: 5
         min: 2
       action:
         fixed: LinkedClone
@@ -139,11 +139,11 @@ components:
         default: 2
         max: 2
         min: 2
-      description: Kubernetes Node
+      description: Kubernetes Worker Node
       disks:
       - capacity: 16
         custom_properties: null
-        id: 1543425961404
+        id: 1552947780274
         initial_location: ''
         is_clone: true
         label: Hard disk 1
@@ -157,9 +157,9 @@ components:
       max_network_adapters: {}
       max_volumes: {}
       memory:
-        default: 1024
+        default: 2048
         max: 4096
-        min: 1024
+        min: 2048
       nics:
       - address: ''
         assignment_type: Static
@@ -174,41 +174,54 @@ components:
       security_groups: []
       security_tags: []
       snapshot_name:
-        fixed: base
+        fixed: Base
       source_machine:
         fixed:
           id: 8020b658-7222-4ca0-94ee-00b8a54ce1e8
           label: CentOS7-base-vm
       source_machine_external_snapshot:
-        fixed: 3
+        fixed: 6
       source_machine_name:
         fixed: CentOS7-base-vm
       source_machine_vmsnapshot:
         fixed:
-          id: '4015'
+          id: '5024'
       storage:
         default: 16
         max: 40
         min: 16
   Linux__Add_Public_Key_1:
     type: Software.LinuxAddPublicKey
-    dependsOn:
-    - Linux_helm_cli
     data:
       auth_key_path:
         default: /root/.ssh/authorized_keys
-        required: true
-        visible: true
+        required: false
       host:
         fixed: ${_resource~K8s-Master}
-      pub_key_text:
-        default: ''
-        visible: true
+      pub_key_text: ''
+  Linux__Add_Public_Key_2:
+    type: Software.LinuxAddPublicKey
+    data:
+      auth_key_path:
+        default: ${Linux__Add_Public_Key_1~auth_key_path}
+        required: false
+      host:
+        fixed: ${_resource~K8s-Node}
+      pub_key_text: ${Linux__Add_Public_Key_1~pub_key_text}
   Linux__Colorize_Console:
     type: Software.LinuxColorizeConsole
+    dependsOn:
+    - Linux__Add_Public_Key_1
     data:
       host:
         fixed: ${_resource~K8s-Master}
+  Linux__Colorize_Console_1:
+    type: Software.LinuxColorizeConsole
+    dependsOn:
+    - Linux__Add_Public_Key_2
+    data:
+      host:
+        fixed: ${_resource~K8s-Node}
   Linux_helm_cli:
     type: Software.Linuxhelmcli
     dependsOn:
@@ -224,15 +237,17 @@ components:
       network_profile:
         fixed: corp-192.168.110.0/24
 layout:
-  CentOS_Docker_master: 1,0
-  CentOS_Docker_node: 0,0
+  CentOS_Docker_master: 2,0
+  CentOS_Docker_node: 2,0
   CentOS_K8s_Master: 0,0
   CentOS_K8s_Node: 0,0
   CentOS_K8s_base_master: 0,0
   CentOS_K8s_base_node: 0,0
   K8s-Master: 0,1
   K8s-Node: 0,2
-  Linux__Add_Public_Key_1: 3,0
-  Linux__Colorize_Console: 0,0
-  Linux_helm_cli: 2,0
+  Linux__Add_Public_Key_1: 0,0
+  Linux__Add_Public_Key_2: 0,0
+  Linux__Colorize_Console: 1,0
+  Linux__Colorize_Console_1: 1,0
+  Linux_helm_cli: 3,0
   corp192168110024: 1,0

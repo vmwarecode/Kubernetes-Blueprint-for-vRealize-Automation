@@ -1,5 +1,5 @@
-name: "Kubernetes"
-productVersion: "7.5.0-SNAPSHOT"
+name: "auto-generated-pkg-d2bf714e-471a-447d-b8fb-ec30e5ffcdf5"
+productVersion: "7.6.0-SNAPSHOT"
 data:
 - locator: "composite-blueprint/Kubernetes.yaml"
   name: "Kubernetes"
@@ -40,4 +40,4 @@ data:
   name: "Linux: Add Public Key"
   description: "This software component will add the provided public key text to the\
     \ /root/.ssh/authorized_keys file (or the path/file provided by override)"
-exportTime: "2018-11-28T23:57:41.669Z"
+exportTime: "2019-08-12T21:14:49.201Z"
